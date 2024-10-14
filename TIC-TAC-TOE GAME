@@ -1,0 +1,98 @@
+#include <iostream>
+using namespace std;
+const int SIZE = 3;
+char board[SIZE][SIZE] = { {'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'} };
+char currentPlayer = 'X';
+void printBoard() {
+    cout << "\n";
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            cout << board[i][j];
+            if (j < SIZE - 1) cout << " | ";
+        }
+        if (i < SIZE - 1) cout << "\n---------\n";
+    }
+    cout << "\n";
+}
+bool checkWin() {
+    for (int i = 0; i < SIZE; ++i) {
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) return true;
+        if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) return true;
+    }
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) return true;
+    if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) return true;
+
+    return false;
+}
+
+bool checkDraw() {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            if (board[i][j] != 'X' && board[i][j] != 'O') return false;
+        }
+    }
+    return true;
+}
+
+void switchPlayer() {
+    currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+}
+
+void makeMove() {
+    int choice;
+    cout << "Player " << currentPlayer << ", enter your move (1-9): ";
+    cin >> choice;
+
+    int row = (choice - 1) / SIZE;
+    int col = (choice - 1) % SIZE;
+
+    if (choice < 1 || choice > 9 || board[row][col] == 'X' || board[row][col] == 'O') {
+        cout << "Invalid move! Try again.\n";
+        makeMove();
+    } else {
+        board[row][col] = currentPlayer;
+    }
+}
+
+void resetBoard() {
+    char initialBoard[SIZE][SIZE] = { {'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'} };
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            board[i][j] = initialBoard[i][j];
+        }
+    }
+    currentPlayer = 'X';
+}
+
+int main() {
+    bool playAgain = true;
+    char choice;
+
+    while (playAgain) {
+        resetBoard();
+        bool gameEnded = false;
+
+        while (!gameEnded) {
+            printBoard();
+            makeMove();
+
+            if (checkWin()) {
+                printBoard();
+                cout << "Player " << currentPlayer << " wins!\n";
+                gameEnded = true;
+            } else if (checkDraw()) {
+                printBoard();
+                cout << "It's a draw!\n";
+                gameEnded = true;
+            } else {
+                switchPlayer();
+            }
+        }
+
+        cout << "Do you want to play again? (y/n): ";
+        cin >> choice;
+        playAgain = (choice == 'y' || choice == 'Y');
+    }
+
+    return 0;
+}
